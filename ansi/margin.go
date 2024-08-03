@@ -15,8 +15,8 @@ type MarginWriter struct {
 	indentPos, marginPos uint
 	indentToken          string
 
-	profile termenv.Profile
-	rules   StylePrimitive
+	profile            termenv.Profile
+	rules, parentRules StylePrimitive
 
 	w  io.Writer
 	pw *padding.Writer
@@ -27,9 +27,10 @@ type MarginWriter struct {
 func NewMarginWriter(ctx RenderContext, w io.Writer, rules StyleBlock) *MarginWriter {
 	bs := ctx.blockStack
 	mw := &MarginWriter{
-		w:       w,
-		profile: ctx.options.ColorProfile,
-		rules:   bs.Parent().Style.StylePrimitive,
+		w:           w,
+		profile:     ctx.options.ColorProfile,
+		rules:       rules.StylePrimitive,
+		parentRules: bs.Parent().Style.StylePrimitive,
 	}
 
 	if rules.Indent != nil {
@@ -43,8 +44,8 @@ func NewMarginWriter(ctx RenderContext, w io.Writer, rules StyleBlock) *MarginWr
 		mw.margin = *rules.Margin
 	}
 
-	mw.pw = padding.NewWriterPipe(w, bs.Width(ctx), func(wr io.Writer) {
-		renderText(w, ctx.options.ColorProfile, rules.StylePrimitive, " ")
+	mw.pw = padding.NewWriterPipe(mw.w, bs.Width(ctx), func(wr io.Writer) {
+		renderText(mw.w, mw.profile, mw.rules, " ")
 	})
 
 	mw.iw = indent.NewWriterPipe(mw.pw, mw.indentation+mw.margin, mw.indentFunc)
@@ -75,5 +76,5 @@ func (w *MarginWriter) indentFunc(iw io.Writer) {
 			w.indentPos = 0
 		}
 	}
-	renderText(iw, w.profile, w.rules, ic)
+	renderText(w.w, w.profile, w.parentRules, ic)
 }
