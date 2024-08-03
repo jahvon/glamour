@@ -25,8 +25,12 @@ type MarginWriter struct {
 
 // NewMarginWriter returns a new MarginWriter.
 func NewMarginWriter(ctx RenderContext, w io.Writer, rules StyleBlock) *MarginWriter {
-	mw := &MarginWriter{w: w}
 	bs := ctx.blockStack
+	mw := &MarginWriter{
+		w:       w,
+		profile: ctx.options.ColorProfile,
+		rules:   bs.Parent().Style.StylePrimitive,
+	}
 
 	if rules.Indent != nil {
 		mw.indentation = *rules.Indent
