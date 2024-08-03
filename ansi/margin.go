@@ -54,22 +54,22 @@ func (w *MarginWriter) Write(b []byte) (int, error) {
 // indentFunc is called when writing each the margin and indentation tokens.
 // The margin is written first, using an empty space character as the token.
 // The indentation is written next, using the token specified in the rules.
-func (mw *MarginWriter) indentFunc(w io.Writer) {
+func (w *MarginWriter) indentFunc(iw io.Writer) {
 	ic := " "
 	switch {
-	case mw.margin == 0 && mw.indentation == 0:
+	case w.margin == 0 && w.indentation == 0:
 		return
-	case mw.margin >= 1 && mw.indentation == 0:
+	case w.margin >= 1 && w.indentation == 0:
 		break
-	case mw.margin >= 1 && mw.marginPos < mw.margin:
-		mw.marginPos++
-	case mw.indentation >= 1 && mw.indentPos < mw.indentation:
-		mw.indentPos++
-		ic = mw.indentToken
-		if mw.indentPos == mw.indentation {
-			mw.marginPos = 0
-			mw.indentPos = 0
+	case w.margin >= 1 && w.marginPos < w.margin:
+		w.marginPos++
+	case w.indentation >= 1 && w.indentPos < w.indentation:
+		w.indentPos++
+		ic = w.indentToken
+		if w.indentPos == w.indentation {
+			w.marginPos = 0
+			w.indentPos = 0
 		}
 	}
-	renderText(w, mw.profile, mw.rules, ic)
+	renderText(iw, w.profile, w.rules, ic)
 }
