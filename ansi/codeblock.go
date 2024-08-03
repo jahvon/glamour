@@ -7,7 +7,6 @@ import (
 	"github.com/alecthomas/chroma/v2"
 	"github.com/alecthomas/chroma/v2/quick"
 	"github.com/alecthomas/chroma/v2/styles"
-	"github.com/muesli/reflow/indent"
 	"github.com/muesli/termenv"
 )
 
@@ -62,16 +61,7 @@ func chromaStyle(style StylePrimitive) string {
 
 func (e *CodeBlockElement) Render(w io.Writer, ctx RenderContext) error {
 	bs := ctx.blockStack
-
-	var indentation uint
-	var margin uint
 	rules := ctx.options.Styles.CodeBlock
-	if rules.Indent != nil {
-		indentation = *rules.Indent
-	}
-	if rules.Margin != nil {
-		margin = *rules.Margin
-	}
 	theme := rules.Theme
 
 	if rules.Chroma != nil && ctx.options.ColorProfile != termenv.Ascii {
@@ -118,18 +108,15 @@ func (e *CodeBlockElement) Render(w io.Writer, ctx RenderContext) error {
 		mutex.Unlock()
 	}
 
-	iw := indent.NewWriterPipe(w, indentation+margin, func(wr io.Writer) {
-		renderText(w, ctx.options.ColorProfile, bs.Current().Style.StylePrimitive, " ")
-	})
-
+	mw := NewMarginWriter(ctx, w, rules.StyleBlock)
 	if len(theme) > 0 {
-		renderText(iw, ctx.options.ColorProfile, bs.Current().Style.StylePrimitive, rules.BlockPrefix)
+		renderText(mw, ctx.options.ColorProfile, bs.Current().Style.StylePrimitive, rules.BlockPrefix)
 
-		err := quick.Highlight(iw, e.Code, e.Language, "terminal256", theme)
+		err := quick.Highlight(mw, e.Code, e.Language, "terminal256", theme)
 		if err != nil {
 			return err
 		}
-		renderText(iw, ctx.options.ColorProfile, bs.Current().Style.StylePrimitive, rules.BlockSuffix)
+		renderText(mw, ctx.options.ColorProfile, bs.Current().Style.StylePrimitive, rules.BlockSuffix)
 		return nil
 	}
 
@@ -139,5 +126,5 @@ func (e *CodeBlockElement) Render(w io.Writer, ctx RenderContext) error {
 		Style: rules.StylePrimitive,
 	}
 
-	return el.Render(iw, ctx)
+	return el.Render(mw, ctx)
 }
