@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/charmbracelet/glamour"
+	"github.com/jahvon/glamour"
 	"github.com/muesli/termenv"
 )
 
