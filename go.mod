@@ -4,15 +4,15 @@ go 1.21
 
 require (
 	github.com/alecthomas/chroma/v2 v2.14.0
-	github.com/charmbracelet/lipgloss v0.12.1
-	github.com/charmbracelet/x/ansi v0.1.4
-	github.com/charmbracelet/x/exp/golden v0.0.0-20240715153702-9ba8adf781c4
+	github.com/charmbracelet/lipgloss v0.13.0
+	github.com/charmbracelet/x/ansi v0.3.2
+	github.com/charmbracelet/x/exp/golden v0.0.0-20240806155701-69247e0abc2a
 	github.com/microcosm-cc/bluemonday v1.0.27
 	github.com/muesli/reflow v0.3.0
 	github.com/muesli/termenv v0.15.3-0.20240618155329-98d742f6907a
 	github.com/yuin/goldmark v1.7.4
 	github.com/yuin/goldmark-emoji v1.0.3
-	golang.org/x/term v0.22.0
+	golang.org/x/term v0.24.0
 )
 
 require (
@@ -26,5 +26,5 @@ require (
 	github.com/mattn/go-runewidth v0.0.15 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	golang.org/x/net v0.27.0 // indirect
-	golang.org/x/sys v0.22.0 // indirect
+	golang.org/x/sys v0.25.0 // indirect
 )
