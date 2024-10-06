@@ -124,7 +124,7 @@ func (e *CodeBlockElement) Finish(w io.Writer, ctx RenderContext) error {
 		mutex.Unlock()
 	}
 
-	mw := NewMarginWriter(ctx, w, bs.Current().Style)
+	mw := NewMarginWriter(ctx, w, bs.Current().Style, false)
 	renderText(mw, ctx.options.ColorProfile, bs.Current().Style.StylePrimitive, rules.BlockPrefix)
 	if len(theme) > 0 {
 		err := quick.Highlight(mw, e.Code, e.Language, "terminal256", theme)

@@ -24,7 +24,7 @@ type MarginWriter struct {
 }
 
 // NewMarginWriter returns a new MarginWriter.
-func NewMarginWriter(ctx RenderContext, w io.Writer, rules StyleBlock) *MarginWriter {
+func NewMarginWriter(ctx RenderContext, w io.Writer, rules StyleBlock, padded bool) *MarginWriter {
 	bs := ctx.blockStack
 	mw := &MarginWriter{
 		w:           w,
@@ -44,11 +44,15 @@ func NewMarginWriter(ctx RenderContext, w io.Writer, rules StyleBlock) *MarginWr
 		mw.margin = *rules.Margin
 	}
 
-	mw.pw = padding.NewWriterPipe(mw.w, bs.Width(ctx), func(wr io.Writer) {
-		renderText(mw.w, mw.profile, mw.rules, " ")
-	})
+	fwd := mw.w
+	if padded {
+		mw.pw = padding.NewWriterPipe(mw.w, bs.Width(ctx), func(wr io.Writer) {
+			renderText(mw.w, mw.profile, mw.rules, "")
+		})
+		fwd = mw.pw
+	}
 
-	mw.iw = indent.NewWriterPipe(mw.pw, mw.indentation+mw.margin, mw.indentFunc)
+	mw.iw = indent.NewWriterPipe(fwd, mw.indentation+(mw.margin*2), mw.indentFunc)
 	return mw
 }
 
